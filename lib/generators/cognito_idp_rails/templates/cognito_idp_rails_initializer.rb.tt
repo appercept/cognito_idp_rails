@@ -1,0 +1,17 @@
+CognitoIdpRails.configure do |config|
+  config.client_id = ENV["COGNITO_CLIENT_ID"]
+  config.client_secret = ENV["COGNITO_CLIENT_SECRET"]
+  config.domain = ENV["COGNITO_DOMAIN"]
+  config.on_valid_login = lambda do |token, user_info, session|
+    # 1. Find or create a user.
+    # user = User.where(identifier: user_info.sub).find_or_create do |user|
+    #   user.email = user_info.email
+    # end
+
+    # 2. Set any session data for the user.
+    # session[:user_id] = user.id
+  end
+  config.on_logout = lambda do |session|
+    # Your last chance to do something before the session is reset.
+  end
+end
