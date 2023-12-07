@@ -4,7 +4,7 @@ CognitoIdpRails.configure do |config|
   config.domain = ENV["COGNITO_DOMAIN"]
   config.on_valid_login = lambda do |token, user_info, session|
     # 1. Find or create a user.
-    # user = User.where(identifier: user_info.sub).find_or_create do |user|
+    # user = User.where(identifier: user_info.sub).first_or_create do |user|
     #   user.email = user_info.email
     # end
 

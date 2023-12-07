@@ -122,7 +122,7 @@ RSpec.describe "Sessions", type: :request do
         get path
 
         expect(client).to have_received(:get_token)
-          .with(grant_type: :authorization_code, code: code, redirect_uri:)
+          .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
       end
 
       context "when a token is received" do

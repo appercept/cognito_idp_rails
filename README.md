@@ -16,7 +16,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 After adding the gem to your application, run the install generator:
 
-    $ rails generate cognito_idp:install
+    $ rails generate cognito_idp_rails:install
 
 This generator will add `cognito_idp` to your routes and install an initializer at `config/initializers/cognito_idp.rb`.
 
