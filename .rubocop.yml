@@ -1,0 +1,10 @@
+---
+inherit_gem:
+  standard: config/base.yml
+
+AllCops:
+  NewCops: enable
+
+require:
+  - rubocop-rspec
+  - standard

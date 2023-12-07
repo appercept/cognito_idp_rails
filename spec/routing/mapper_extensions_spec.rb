@@ -1,15 +1,15 @@
 require "rails_helper"
 
 RSpec.describe CognitoIdpRails::Routing::MapperExtensions, type: :routing do
-  it "defines cognito_idp method" do
-    expect(ActionDispatch::Routing::Mapper.new(ActionDispatch::Routing::RouteSet.new)).to respond_to(:cognito_idp)
-  end
-
   before do
     Rails.application.routes.draw do
       cognito_idp
     end
     Rails.application.reload_routes!
+  end
+
+  it "defines cognito_idp method" do
+    expect(ActionDispatch::Routing::Mapper.new(ActionDispatch::Routing::RouteSet.new)).to respond_to(:cognito_idp)
   end
 
   it "adds login route" do

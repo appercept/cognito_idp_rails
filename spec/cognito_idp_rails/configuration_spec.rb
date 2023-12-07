@@ -7,7 +7,7 @@ RSpec.describe CognitoIdpRails::Configuration do
     subject(:after_login_route) { configuration.after_login_route }
 
     it "defaults to /" do
-      is_expected.to eq("/")
+      expect(subject).to eq("/")
     end
 
     context "when specified" do
@@ -25,7 +25,7 @@ RSpec.describe CognitoIdpRails::Configuration do
     subject(:after_logout_route) { configuration.after_logout_route }
 
     it "defaults to /" do
-      is_expected.to eq("/")
+      expect(subject).to eq("/")
     end
 
     context "when specified" do
