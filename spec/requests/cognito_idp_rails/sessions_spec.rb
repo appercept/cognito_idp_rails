@@ -3,10 +3,10 @@ require "rails_helper"
 RSpec.describe "Sessions", type: :request do
   before do
     allow(CognitoIdpRails).to receive(:client).and_return(client)
-    allow(configuration).to receive(:on_valid_login).and_return(on_valid_login)
-    allow(on_valid_login).to receive(:call)
-    allow(configuration).to receive(:on_logout).and_return(on_logout)
-    allow(on_logout).to receive(:call)
+    allow(configuration).to receive(:after_login).and_return(after_login)
+    allow(after_login).to receive(:call)
+    allow(configuration).to receive(:before_logout).and_return(before_logout)
+    allow(before_logout).to receive(:call)
   end
 
   let(:configuration) { CognitoIdpRails.configuration }
@@ -15,10 +15,10 @@ RSpec.describe "Sessions", type: :request do
   let(:client_secret) { "SECRET" }
   let(:domain) { "auth.example.com" }
   let(:redirect_uri) { "http://www.example.com/auth/login_callback" }
-  let(:on_valid_login) do
+  let(:after_login) do
     lambda { |token, user_info, session| }
   end
-  let(:on_logout) do
+  let(:before_logout) do
     lambda { |session| }
   end
 
@@ -144,10 +144,10 @@ RSpec.describe "Sessions", type: :request do
             expect(session[:session_id]).not_to eq(original_session_id)
           end
 
-          it "calls back to on_valid_login" do
+          it "calls back to after_login" do
             get path
 
-            expect(on_valid_login).to have_received(:call).with(valid_token, user_info, ActionDispatch::Request::Session)
+            expect(after_login).to have_received(:call).with(valid_token, user_info, ActionDispatch::Request)
           end
         end
 
@@ -161,8 +161,8 @@ RSpec.describe "Sessions", type: :request do
 
           include_examples "unsuccessful login"
 
-          it "does not call back to on_valid_login" do
-            expect(on_valid_login).not_to have_received(:call)
+          it "does not call back to after_login" do
+            expect(after_login).not_to have_received(:call)
           end
         end
       end
@@ -180,8 +180,8 @@ RSpec.describe "Sessions", type: :request do
           expect(client).not_to have_received(:get_user_info).with(valid_token)
         end
 
-        it "does not call back to on_valid_login" do
-          expect(on_valid_login).not_to have_received(:call)
+        it "does not call back to after_login" do
+          expect(after_login).not_to have_received(:call)
         end
       end
     end
@@ -217,10 +217,10 @@ RSpec.describe "Sessions", type: :request do
   end
 
   describe "GET /auth/logout_callback" do
-    it "calls back to on_valid_login" do
+    it "calls back to before_logout" do
       get "/auth/logout_callback"
 
-      expect(on_logout).to have_received(:call).with(ActionDispatch::Request::Session)
+      expect(before_logout).to have_received(:call).with(ActionDispatch::Request)
     end
 
     it "redirects to the after_logout_route" do

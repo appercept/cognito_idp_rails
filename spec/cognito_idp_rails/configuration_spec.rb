@@ -87,35 +87,35 @@ RSpec.describe CognitoIdpRails::Configuration do
     end
   end
 
-  describe "#on_logout" do
-    subject(:on_logout) { configuration.on_logout }
+  describe "#after_login" do
+    subject(:after_login) { configuration.after_login }
 
     it { is_expected.to be_a(Proc) }
 
     context "when specified" do
       before do
-        configuration.on_logout = new_on_logout
+        configuration.after_login = new_after_login
       end
 
-      let(:new_on_logout) { instance_double(Proc) }
+      let(:new_after_login) { instance_double(Proc) }
 
-      it { is_expected.to eq(new_on_logout) }
+      it { is_expected.to eq(new_after_login) }
     end
   end
 
-  describe "#on_valid_login" do
-    subject(:on_valid_login) { configuration.on_valid_login }
+  describe "#before_logout" do
+    subject(:before_logout) { configuration.before_logout }
 
     it { is_expected.to be_a(Proc) }
 
     context "when specified" do
       before do
-        configuration.on_valid_login = new_on_valid_login
+        configuration.before_logout = new_before_logout
       end
 
-      let(:new_on_valid_login) { instance_double(Proc) }
+      let(:new_before_logout) { instance_double(Proc) }
 
-      it { is_expected.to eq(new_on_valid_login) }
+      it { is_expected.to eq(new_before_logout) }
     end
   end
 
