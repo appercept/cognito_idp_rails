@@ -1,8 +1,16 @@
 # Changelog
 
-## [0.1.1](https://github.com/appercept/cognito_idp_rails/tree/0.1.1) (2023-12-07)
+## [1.0.0](https://github.com/appercept/cognito_idp_rails/tree/1.0.0) (2023-12-14)
 
-[Full Changelog](https://github.com/appercept/cognito_idp_rails/compare/v0.1.0...0.1.1)
+[Full Changelog](https://github.com/appercept/cognito_idp_rails/compare/v0.1.1...1.0.0)
+
+**Merged pull requests:**
+
+- feat: Improved callbacks [\#3](https://github.com/appercept/cognito_idp_rails/pull/3) ([rhatherall](https://github.com/rhatherall))
+
+## [v0.1.1](https://github.com/appercept/cognito_idp_rails/tree/v0.1.1) (2023-12-07)
+
+[Full Changelog](https://github.com/appercept/cognito_idp_rails/compare/v0.1.0...v0.1.1)
 
 **Merged pull requests:**
 
