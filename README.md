@@ -21,7 +21,7 @@ After adding the gem to your application, run the install generator:
 This generator will add `cognito_idp` to your routes and install an initializer at `config/initializers/cognito_idp.rb`.
 
 Be sure to review and edit the initializer to configure options for your Amazon Cognito User Pool configuration. You
-must also provide an implementation for the `on_valid_login` function in the initializer appropriate for any actions you
+must also provide an implementation for the `after_login` function in the initializer appropriate for any actions you
 want to take when a user signed in.
 
 ## Development

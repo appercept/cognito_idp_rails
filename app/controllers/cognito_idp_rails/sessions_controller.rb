@@ -12,7 +12,7 @@ module CognitoIdpRails
       client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url) do |token|
         client.get_user_info(token) do |user_info|
           reset_session
-          configuration.on_valid_login.call(token, user_info, session)
+          configuration.after_login.call(token, user_info, request)
           redirect_to configuration.after_login_route, notice: "You have been successfully logged in."
           return
         end
@@ -25,7 +25,7 @@ module CognitoIdpRails
     end
 
     def logout_callback
-      configuration.on_logout.call(session)
+      configuration.before_logout.call(request)
       reset_session
       redirect_to configuration.after_logout_route, notice: "You have been successfully logged out."
     end
