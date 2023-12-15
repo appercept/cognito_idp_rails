@@ -1,4 +1,4 @@
-# CognitoIdpRails
+# CognitoIdpRails [![Ruby](https://github.com/appercept/cognito_idp_rails/actions/workflows/main.yml/badge.svg)](https://github.com/appercept/cognito_idp_rails/actions/workflows/main.yml)
 
 Simple integration of Amazon Cognito IdP (User Pools) for Rails applications.
 
