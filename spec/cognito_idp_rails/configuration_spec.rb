@@ -135,6 +135,41 @@ RSpec.describe CognitoIdpRails::Configuration do
     end
   end
 
+  describe "#validate!" do
+    context "when all required attributes are set" do
+      before do
+        configuration.domain = "auth.example.com"
+        configuration.client_id = "client-1"
+        configuration.client_secret = "secret"
+      end
+
+      it "does not raise" do
+        expect { configuration.validate! }.not_to raise_error
+      end
+    end
+
+    context "when domain is missing" do
+      before do
+        configuration.client_id = "client-1"
+        configuration.client_secret = "secret"
+      end
+
+      it "raises a ConfigurationError" do
+        expect { configuration.validate! }.to raise_error(
+          CognitoIdpRails::ConfigurationError, "Missing required configuration: domain"
+        )
+      end
+    end
+
+    context "when multiple attributes are missing" do
+      it "raises a ConfigurationError listing all missing attributes" do
+        expect { configuration.validate! }.to raise_error(
+          CognitoIdpRails::ConfigurationError, "Missing required configuration: domain, client_id, client_secret"
+        )
+      end
+    end
+  end
+
   describe "#scope" do
     subject(:scope) { configuration.scope }
 

@@ -3,6 +3,8 @@ require "cognito_idp_rails/version"
 require "cognito_idp"
 
 module CognitoIdpRails
+  class ConfigurationError < StandardError; end
+
   autoload :Configuration, "cognito_idp_rails/configuration"
 
   module Routing
@@ -11,11 +13,14 @@ module CognitoIdpRails
 
   class << self
     def client
-      @client ||= CognitoIdp::Client.new(
-        client_id: configuration.client_id,
-        client_secret: configuration.client_secret,
-        domain: configuration.domain
-      )
+      @client ||= begin
+        configuration.validate!
+        CognitoIdp::Client.new(
+          client_id: configuration.client_id,
+          client_secret: configuration.client_secret,
+          domain: configuration.domain
+        )
+      end
     end
 
     def configuration
