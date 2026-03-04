@@ -173,7 +173,7 @@ RSpec.describe CognitoIdpRails::Configuration do
   describe "#scope" do
     subject(:scope) { configuration.scope }
 
-    it { is_expected.to be_nil }
+    it { is_expected.to eq("openid") }
 
     context "when specified" do
       before do

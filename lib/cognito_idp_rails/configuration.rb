@@ -11,6 +11,7 @@ module CognitoIdpRails
       @after_login = lambda { |token, user_info, request| }
       @before_logout = lambda { |request| }
       @on_login_error = lambda { |error, request| }
+      @scope = "openid"
     end
 
     def validate!
