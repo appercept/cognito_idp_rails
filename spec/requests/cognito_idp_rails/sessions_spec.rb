@@ -125,6 +125,12 @@ RSpec.describe "Sessions", type: :request do
           .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
       end
 
+      it "clears the login state" do
+        get path
+
+        expect(session[:login_state]).to be_nil
+      end
+
       context "when a token is received" do
         it "requests user_info" do
           get path
@@ -162,6 +168,12 @@ RSpec.describe "Sessions", type: :request do
 
           include_examples "unsuccessful login"
 
+          it "clears the login state" do
+            state
+            get path
+            expect(session[:login_state]).to be_nil
+          end
+
           it "does not call back to after_login" do
             expect(after_login).not_to have_received(:call)
           end
@@ -176,6 +188,12 @@ RSpec.describe "Sessions", type: :request do
         end
 
         include_examples "unsuccessful login"
+
+        it "clears the login state" do
+          state
+          get path
+          expect(session[:login_state]).to be_nil
+        end
 
         it "does not request user_info" do
           expect(client).not_to have_received(:get_user_info).with(valid_token)

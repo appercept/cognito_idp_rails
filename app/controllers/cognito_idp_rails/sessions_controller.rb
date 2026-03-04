@@ -9,6 +9,7 @@ module CognitoIdpRails
     end
 
     def login_callback
+      session.delete(:login_state)
       token = client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url)
       user_info = client.get_user_info(token)
       reset_session
