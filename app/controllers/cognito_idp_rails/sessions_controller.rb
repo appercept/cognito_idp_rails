@@ -9,8 +9,9 @@ module CognitoIdpRails
     end
 
     def login_callback
+      verifier = session.delete(:code_verifier)
       session.delete(:login_state)
-      token = client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url)
+      token = client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url, code_verifier: verifier)
       user_info = client.get_user_info(token)
       reset_session
       configuration.after_login.call(token, user_info, request)
@@ -33,7 +34,13 @@ module CognitoIdpRails
     private
 
     def authorization_url
-      client.authorization_uri(redirect_uri: auth_login_callback_url, scope: scope, state: login_state)
+      client.authorization_uri(
+        redirect_uri: auth_login_callback_url,
+        scope: scope,
+        state: login_state,
+        code_challenge: code_challenge,
+        code_challenge_method: "S256"
+      )
     end
 
     def client
@@ -46,6 +53,14 @@ module CognitoIdpRails
 
     def scope
       configuration.scope
+    end
+
+    def code_verifier
+      session[:code_verifier] ||= SecureRandom.urlsafe_base64(32)
+    end
+
+    def code_challenge
+      Base64.urlsafe_encode64(Digest::SHA256.digest(code_verifier), padding: false)
     end
 
     def login_state

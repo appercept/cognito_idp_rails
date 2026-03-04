@@ -61,10 +61,32 @@ RSpec.describe "Sessions", type: :request do
       expect(redirect_params).to include(["state", String])
     end
 
+    it "redirects with a code_challenge derived from the code_verifier" do
+      get "/login"
+
+      expected_challenge = Base64.urlsafe_encode64(
+        Digest::SHA256.digest(session[:code_verifier]),
+        padding: false
+      )
+      expect(redirect_params).to include(["code_challenge", expected_challenge])
+    end
+
+    it "redirects with a code_challenge_method" do
+      get "/login"
+
+      expect(redirect_params).to include(["code_challenge_method", "S256"])
+    end
+
     it "remembers the login_state" do
       get "/login"
 
       expect(session[:login_state]).to be_present
+    end
+
+    it "remembers the code_verifier" do
+      get "/login"
+
+      expect(session[:code_verifier]).to be_present
     end
   end
 
@@ -75,6 +97,10 @@ RSpec.describe "Sessions", type: :request do
       session[:login_state]
     end
     let(:code) { "CODE" }
+    let(:code_verifier) do
+      state
+      session[:code_verifier]
+    end
 
     shared_examples "successful login" do
       it "redirects to the after_login_route" do
@@ -118,22 +144,28 @@ RSpec.describe "Sessions", type: :request do
 
       before do
         allow(client).to receive(:get_token)
-          .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
+          .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri, code_verifier: code_verifier)
           .and_return(valid_token)
         allow(client).to receive(:get_user_info).with(valid_token).and_return(user_info)
       end
 
-      it "requests a token" do
+      it "requests a token with the code_verifier" do
         get path
 
         expect(client).to have_received(:get_token)
-          .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
+          .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri, code_verifier: code_verifier)
       end
 
       it "clears the login state" do
         get path
 
         expect(session[:login_state]).to be_nil
+      end
+
+      it "clears the code_verifier" do
+        get path
+
+        expect(session[:code_verifier]).to be_nil
       end
 
       context "when a token is received" do
@@ -167,7 +199,7 @@ RSpec.describe "Sessions", type: :request do
 
           before do
             allow(client).to receive(:get_token)
-              .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
+              .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri, code_verifier: code_verifier)
               .and_return(valid_token)
             allow(client).to receive(:get_user_info).with(valid_token)
               .and_raise(error)
@@ -179,6 +211,12 @@ RSpec.describe "Sessions", type: :request do
             state
             get path
             expect(session[:login_state]).to be_nil
+          end
+
+          it "clears the code_verifier" do
+            state
+            get path
+            expect(session[:code_verifier]).to be_nil
           end
 
           it "calls back to on_login_error" do
@@ -198,7 +236,7 @@ RSpec.describe "Sessions", type: :request do
 
         before do
           allow(client).to receive(:get_token)
-            .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
+            .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri, code_verifier: code_verifier)
             .and_raise(error)
         end
 
@@ -208,6 +246,12 @@ RSpec.describe "Sessions", type: :request do
           state
           get path
           expect(session[:login_state]).to be_nil
+        end
+
+        it "clears the code_verifier" do
+          state
+          get path
+          expect(session[:code_verifier]).to be_nil
         end
 
         it "calls back to on_login_error" do
