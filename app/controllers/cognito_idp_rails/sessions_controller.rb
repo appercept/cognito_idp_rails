@@ -15,7 +15,8 @@ module CognitoIdpRails
       reset_session
       configuration.after_login.call(token, user_info, request)
       redirect_to configuration.after_login_route, notice: "You have been successfully logged in."
-    rescue CognitoIdp::Error
+    rescue CognitoIdp::Error => e
+      configuration.on_login_error.call(e, request)
       redirect_to configuration.after_login_route, notice: "Login failed."
     end
 
