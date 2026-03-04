@@ -7,6 +7,8 @@ RSpec.describe "Sessions", type: :request do
     allow(after_login).to receive(:call)
     allow(configuration).to receive(:before_logout).and_return(before_logout)
     allow(before_logout).to receive(:call)
+    allow(configuration).to receive(:on_login_error).and_return(on_login_error)
+    allow(on_login_error).to receive(:call)
   end
 
   let(:configuration) { CognitoIdpRails.configuration }
@@ -20,6 +22,9 @@ RSpec.describe "Sessions", type: :request do
   end
   let(:before_logout) do
     lambda { |session| }
+  end
+  let(:on_login_error) do
+    lambda { |error, request| }
   end
 
   describe "GET /login" do
@@ -158,12 +163,14 @@ RSpec.describe "Sessions", type: :request do
         end
 
         context "when get_user_info raises an error" do
+          let(:error) { CognitoIdp::Error.new(error: "invalid_token", http_status: 401) }
+
           before do
             allow(client).to receive(:get_token)
               .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
               .and_return(valid_token)
             allow(client).to receive(:get_user_info).with(valid_token)
-              .and_raise(CognitoIdp::Error.new(error: "invalid_token", http_status: 401))
+              .and_raise(error)
           end
 
           include_examples "unsuccessful login"
@@ -174,6 +181,12 @@ RSpec.describe "Sessions", type: :request do
             expect(session[:login_state]).to be_nil
           end
 
+          it "calls back to on_login_error" do
+            state
+            get path
+            expect(on_login_error).to have_received(:call).with(error, ActionDispatch::Request)
+          end
+
           it "does not call back to after_login" do
             expect(after_login).not_to have_received(:call)
           end
@@ -181,10 +194,12 @@ RSpec.describe "Sessions", type: :request do
       end
 
       context "when get_token raises an error" do
+        let(:error) { CognitoIdp::Error.new(error: "invalid_grant", http_status: 400) }
+
         before do
           allow(client).to receive(:get_token)
             .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
-            .and_raise(CognitoIdp::Error.new(error: "invalid_grant", http_status: 400))
+            .and_raise(error)
         end
 
         include_examples "unsuccessful login"
@@ -193,6 +208,12 @@ RSpec.describe "Sessions", type: :request do
           state
           get path
           expect(session[:login_state]).to be_nil
+        end
+
+        it "calls back to on_login_error" do
+          state
+          get path
+          expect(on_login_error).to have_received(:call).with(error, ActionDispatch::Request)
         end
 
         it "does not request user_info" do

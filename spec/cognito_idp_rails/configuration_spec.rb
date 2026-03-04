@@ -119,6 +119,22 @@ RSpec.describe CognitoIdpRails::Configuration do
     end
   end
 
+  describe "#on_login_error" do
+    subject(:on_login_error) { configuration.on_login_error }
+
+    it { is_expected.to be_a(Proc) }
+
+    context "when specified" do
+      before do
+        configuration.on_login_error = new_on_login_error
+      end
+
+      let(:new_on_login_error) { instance_double(Proc) }
+
+      it { is_expected.to eq(new_on_login_error) }
+    end
+  end
+
   describe "#scope" do
     subject(:scope) { configuration.scope }
 
