@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Simple Rails integration for Amazon Cognito IdP (User Pools)"
   spec.description = "Simple Rails integration for authentication through Amazon Cognito IdP (User Pools)"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.2.0"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
@@ -19,6 +19,6 @@ Gem::Specification.new do |spec|
     Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
   end
 
-  spec.add_dependency "cognito_idp", ">= 0.1.1"
+  spec.add_dependency "cognito_idp", "~> 1.0"
   spec.add_dependency "rails", ">= 7.0.0"
 end

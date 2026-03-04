@@ -6,8 +6,6 @@ gemspec
 
 gem "puma"
 
-gem "sqlite3"
-
 gem "sprockets-rails"
 
 # Start debugger with binding.b [https://github.com/ruby/debug]
@@ -17,4 +15,4 @@ gem "rspec-rails", "~> 6.1"
 
 gem "standard", "~> 1.32"
 
-gem "rubocop-rspec", "~> 2.25"
+gem "rubocop-rspec", "~> 3.0"

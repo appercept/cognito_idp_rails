@@ -1,0 +1,6 @@
+en:
+  cognito_idp_rails:
+    sessions:
+      login_success: "You have been successfully logged in."
+      login_failed: "Login failed."
+      logout_success: "You have been successfully logged out."
