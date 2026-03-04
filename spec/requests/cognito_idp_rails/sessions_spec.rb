@@ -112,7 +112,7 @@ RSpec.describe "Sessions", type: :request do
       it "presents a success notice" do
         get path
 
-        expect(flash[:notice]).to eq("You have been successfully logged in.")
+        expect(flash[:notice]).to eq(I18n.t("cognito_idp_rails.sessions.login_success"))
       end
     end
 
@@ -130,7 +130,7 @@ RSpec.describe "Sessions", type: :request do
 
         get path
 
-        expect(flash[:notice]).to eq("Login failed.")
+        expect(flash[:notice]).to eq(I18n.t("cognito_idp_rails.sessions.login_failed"))
       end
     end
 
@@ -316,7 +316,7 @@ RSpec.describe "Sessions", type: :request do
     it "presents a notice" do
       get "/auth/logout_callback"
 
-      expect(flash[:notice]).to eq("You have been successfully logged out.")
+      expect(flash[:notice]).to eq(I18n.t("cognito_idp_rails.sessions.logout_success"))
     end
 
     it "resets the session" do
