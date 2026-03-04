@@ -114,8 +114,8 @@ RSpec.describe "Sessions", type: :request do
       before do
         allow(client).to receive(:get_token)
           .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
-          .and_yield(valid_token)
-        allow(client).to receive(:get_user_info).with(valid_token).and_yield(user_info)
+          .and_return(valid_token)
+        allow(client).to receive(:get_user_info).with(valid_token).and_return(user_info)
       end
 
       it "requests a token" do
@@ -151,12 +151,13 @@ RSpec.describe "Sessions", type: :request do
           end
         end
 
-        context "when user_info is not received" do
+        context "when get_user_info raises an error" do
           before do
             allow(client).to receive(:get_token)
               .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
-              .and_yield(valid_token)
-            allow(client).to receive(:get_user_info).with(valid_token).and_return(nil)
+              .and_return(valid_token)
+            allow(client).to receive(:get_user_info).with(valid_token)
+              .and_raise(CognitoIdp::Error.new(error: "invalid_token", http_status: 401))
           end
 
           include_examples "unsuccessful login"
@@ -167,11 +168,11 @@ RSpec.describe "Sessions", type: :request do
         end
       end
 
-      context "when a token is not received" do
+      context "when get_token raises an error" do
         before do
           allow(client).to receive(:get_token)
             .with(grant_type: :authorization_code, code: code, redirect_uri: redirect_uri)
-            .and_return(nil)
+            .and_raise(CognitoIdp::Error.new(error: "invalid_grant", http_status: 400))
         end
 
         include_examples "unsuccessful login"
