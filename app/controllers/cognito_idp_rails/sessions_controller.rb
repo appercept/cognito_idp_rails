@@ -9,14 +9,12 @@ module CognitoIdpRails
     end
 
     def login_callback
-      client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url) do |token|
-        client.get_user_info(token) do |user_info|
-          reset_session
-          configuration.after_login.call(token, user_info, request)
-          redirect_to configuration.after_login_route, notice: "You have been successfully logged in."
-          return
-        end
-      end
+      token = client.get_token(grant_type: :authorization_code, code: params[:code], redirect_uri: auth_login_callback_url)
+      user_info = client.get_user_info(token)
+      reset_session
+      configuration.after_login.call(token, user_info, request)
+      redirect_to configuration.after_login_route, notice: "You have been successfully logged in."
+    rescue CognitoIdp::Error
       redirect_to configuration.after_login_route, notice: "Login failed."
     end
 
